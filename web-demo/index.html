@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boule Pétanque Training App - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .phone-frame {
+            background: #000;
+            padding: 10px;
+            border-radius: 30px;
+        }
+
+        .screen {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 844px;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+            color: white;
+            padding: 50px 20px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+
+        .nav-tab.active {
+            border-bottom-color: #2E7D32;
+            color: #2E7D32;
+            font-weight: 600;
+        }
+
+        .nav-tab:hover {
+            background: #f5f5f5;
+        }
+
+        /* Content */
+        .content {
+            padding: 20px;
+            overflow-y: auto;
+            height: calc(844px - 200px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* Challenges */
+        .challenge-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #2E7D32;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .challenge-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .challenge-reward {
+            background: #FFF3E0;
+            color: #F57C00;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2E7D32 0%, #4CAF50 100%);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        /* Achievements */
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .achievement-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .achievement-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        .achievement-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .achievement-points {
+            font-size: 12px;
+            color: #2E7D32;
+            font-weight: 600;
+        }
+
+        .achievement-locked {
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+
+        /* Button */
+        .btn {
+            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(46, 125, 50, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* AR Preview */
+        .ar-preview {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .ar-icon {
+            font-size: 64px;
+            margin-bottom: 12px;
+        }
+
+        /* Voice Command */
+        .voice-button {
+            background: linear-gradient(135deg, #F44336 0%, #D32F2F 100%);
+            color: white;
+            border: none;
+            width: 80px;
+            height: 80px;
+            border-radius: 40px;
+            font-size: 32px;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .voice-button:hover {
+            transform: scale(1.1);
+        }
+
+        .voice-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Streak */
+        .streak-card {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .streak-icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        .streak-number {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .streak-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="phone-frame">
+            <div class="screen">
+                <!-- Header -->
+                <div class="header">
+                    <h1>🎯 Boule Pétanque</h1>
+                    <p>AI-Powered Training App</p>
+                </div>
+
+                <!-- Navigation -->
+                <div class="nav-tabs">
+                    <div class="nav-tab active" onclick="showTab('home')">🏠 Hem</div>
+                    <div class="nav-tab" onclick="showTab('challenges')">🎮 Utmaningar</div>
+                    <div class="nav-tab" onclick="showTab('achievements')">🏆 Achievements</div>
+                    <div class="nav-tab" onclick="showTab('ar')">🥽 AR</div>
+                    <div class="nav-tab" onclick="showTab('voice')">🎤 Röst</div>
+                </div>
+
+                <!-- Content -->
+                <div class="content">
+                    <!-- Home Tab -->
+                    <div id="home" class="tab-content active">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">85%</div>
+                                <div class="stat-label">Noggrannhet</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">45</div>
+                                <div class="stat-label">Träningspass</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">18</div>
+                                <div class="stat-label">Vinster</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">1250</div>
+                                <div class="stat-label">Totalt kast</div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">📊 AI-Driven Analys</div>
+                            <div class="card-description">
+                                Få realtidsanalys av dina kast med AI och datorseende. 
+                                Mät avstånd, hastighet och teknik automatiskt.
+                            </div>
+                            <button class="btn">Starta Träning</button>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">📐 Triangulering</div>
+                            <div class="card-description">
+                                Exakta avståndsmätningar med ARKit/ARCore och LiDAR. 
+                                Precision inom 1cm!
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">📹 Video Replay</div>
+                            <div class="card-description">
+                                Spela upp dina kast i slow-motion (0.25x - 2x). 
+                                Dela till social media!
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Challenges Tab -->
+                    <div id="challenges" class="tab-content">
+                        <div class="streak-card">
+                            <div class="streak-icon">🔥</div>
+                            <div class="streak-number">7</div>
+                            <div class="streak-label">Dagars Streak</div>
+                        </div>
+
+                        <h3 style="margin-bottom: 16px;">Dagens Utmaningar</h3>
+
+                        <div class="challenge-item">
+                            <div class="challenge-header">
+                                <div class="challenge-title">🎯 Precision Master</div>
+                                <div class="challenge-reward">+50p</div>
+                            </div>
+                            <div class="card-description" style="font-size: 12px; margin-bottom: 8px;">
+                                Gör 10 kast med över 80% noggrannhet
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%"></div>
+                            </div>
+                            <div style="font-size: 12px; color: #666; text-align: right;">7/10</div>
+                        </div>
+
+                        <div class="challenge-item">
+                            <div class="challenge-header">
+                                <div class="challenge-title">⚡ Speed Demon</div>
+                                <div class="challenge-reward">+30p</div>
+                            </div>
+                            <div class="card-description" style="font-size: 12px; margin-bottom: 8px;">
+                                Slutför ett träningspass på under 15 minuter
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%"></div>
+                            </div>
+                            <div style="font-size: 12px; color: #4CAF50; text-align: right;">✓ Klar!</div>
+                        </div>
+
+                        <div class="challenge-item">
+                            <div class="challenge-header">
+                                <div class="challenge-title">🏆 Champion</div>
+                                <div class="challenge-reward">+100p</div>
+                            </div>
+                            <div class="card-description" style="font-size: 12px; margin-bottom: 8px;">
+                                Vinn 3 matcher idag
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 33%"></div>
+                            </div>
+                            <div style="font-size: 12px; color: #666; text-align: right;">1/3</div>
+                        </div>
+                    </div>
+
+                    <!-- Achievements Tab -->
+                    <div id="achievements" class="tab-content">
+                        <div class="card" style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%); color: white; text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 8px;">⭐</div>
+                            <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">Level 5</div>
+                            <div style="font-size: 16px; opacity: 0.9;">2,450 poäng</div>
+                            <div class="progress-bar" style="margin-top: 16px; background: rgba(255,255,255,0.3);">
+                                <div class="progress-fill" style="width: 45%; background: white;"></div>
+                            </div>
+                            <div style="font-size: 12px; margin-top: 8px; opacity: 0.9;">550 poäng till Level 6</div>
+                        </div>
+
+                        <h3 style="margin: 20px 0 16px;">🏆 Dina Achievements</h3>
+
+                        <div class="achievement-grid">
+                            <div class="achievement-card">
+                                <div class="achievement-icon">🎯</div>
+                                <div class="achievement-name">Första Kastet</div>
+                                <div class="achievement-points">+10p</div>
+                            </div>
+
+                            <div class="achievement-card">
+                                <div class="achievement-icon">💪</div>
+                                <div class="achievement-name">Dedikerad Tränare</div>
+                                <div class="achievement-points">+100p</div>
+                            </div>
+
+                            <div class="achievement-card">
+                                <div class="achievement-icon">🏆</div>
+                                <div class="achievement-name">Första Segern</div>
+                                <div class="achievement-points">+50p</div>
+                            </div>
+
+                            <div class="achievement-card">
+                                <div class="achievement-icon">🔥</div>
+                                <div class="achievement-name">Veckokrigar</div>
+                                <div class="achievement-points">+150p</div>
+                            </div>
+
+                            <div class="achievement-card achievement-locked">
+                                <div class="achievement-icon">👑</div>
+                                <div class="achievement-name">Champion</div>
+                                <div class="achievement-points">+500p</div>
+                            </div>
+
+                            <div class="achievement-card achievement-locked">
+                                <div class="achievement-icon">🎖️</div>
+                                <div class="achievement-name">Precisionsmästare</div>
+                                <div class="achievement-points">+1000p</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AR Tab -->
+                    <div id="ar" class="tab-content">
+                        <div class="ar-preview">
+                            <div class="ar-icon">🥽</div>
+                            <h3 style="margin-bottom: 8px;">AR-Förbättringar</h3>
+                            <p style="font-size: 14px; opacity: 0.9;">
+                                Aktivera kameran för att se AR-funktioner
+                            </p>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">📐 Virtual Trajectory</div>
+                            <div class="card-description">
+                                Se den ideala kastbanan i AR. Visar var boulen kommer att landa.
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">📏 Distance Measurements</div>
+                            <div class="card-description">
+                                Mät avstånd i realtid med AR-overlay. Precision inom 1cm.
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">🎯 Object Highlighting</div>
+                            <div class="card-description">
+                                Automatisk highlighting av boular och cochonnet i AR.
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">🌐 Ground Plane Detection</div>
+                            <div class="card-description">
+                                ARKit/ARCore detekterar spelplan automatiskt.
+                            </div>
+                        </div>
+
+                        <button class="btn">Aktivera AR-Kamera</button>
+                    </div>
+
+                    <!-- Voice Tab -->
+                    <div id="voice" class="tab-content">
+                        <div class="card" style="text-align: center;">
+                            <div class="card-title" style="justify-content: center;">🎤 Röstkommandon</div>
+                            <div class="card-description" style="margin-bottom: 16px;">
+                                Styr appen med rösten. Handsfree-träning!
+                            </div>
+                            <button class="voice-button">🎙️</button>
+                            <p style="font-size: 12px; color: #666;">Tryck för att börja</p>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">📋 Tillgängliga Kommandon</div>
+                            <div class="card-description">
+                                <strong>Träning:</strong><br>
+                                • "Starta träning"<br>
+                                • "Stoppa träning"<br>
+                                • "Spara kast"<br><br>
+                                
+                                <strong>Kamera:</strong><br>
+                                • "Ta foto"<br>
+                                • "Spela in"<br>
+                                • "Stoppa inspelning"<br><br>
+                                
+                                <strong>AR:</strong><br>
+                                • "Visa bana"<br>
+                                • "Mät avstånd"<br>
+                                • "Kalibrera"
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">🔊 Text-to-Speech</div>
+                            <div class="card-description">
+                                Få kastanalys uppläst automatiskt. Perfekt för handsfree-träning.
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-title">♿ Tillgänglighet</div>
+                            <div class="card-description">
+                                • 4 färgblind-lägen<br>
+                                • Hög kontrast<br>
+                                • Större text (+30%)<br>
+                                • Skärmläsare-stöd
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Remove active from nav
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(nav => nav.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active to nav
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

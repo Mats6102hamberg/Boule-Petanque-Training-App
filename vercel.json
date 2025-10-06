@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "name": "boule-petanque-training-app",
+  "builds": [
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "web-demo/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/web-demo/(.*)",
+      "dest": "/web-demo/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/$1"
+    }
+  ]
+}

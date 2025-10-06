@@ -1,0 +1,27 @@
+{
+  "name": "boule-petanque-training-app",
+  "version": "1.0.0",
+  "description": "AI-Powered Boule Pétanque Training App with AR, Gamification, and Accessibility Features",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Build complete'",
+    "start": "vercel dev"
+  },
+  "keywords": [
+    "petanque",
+    "boule",
+    "training",
+    "ai",
+    "ar",
+    "machine-learning",
+    "react-native",
+    "accessibility"
+  ],
+  "author": "Mats Hamberg",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Mats6102hamberg/Boule-Petanque-Training-App.git"
+  }
+}

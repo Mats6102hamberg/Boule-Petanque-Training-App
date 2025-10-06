@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-Powered Boule Pétanque Training App med AR, Gamification och Accessibility">
+    <meta name="keywords" content="pétanque, boule, training, AI, AR, machine learning">
+    <meta name="author" content="Mats Hamberg">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Boule Pétanque Training App">
+    <meta property="og:description" content="Träna pétanque med AI, AR och gamification">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://boule-petanque-training-app.vercel.app">
+    
+    <title>Boule Pétanque Training App - AI-Powered Training</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #667eea;
+        }
+
+        .feature-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Stats Section */
+        .stats {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* Demo Section */
+        .demo-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .demo-section h2 {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 30px;
+            color: #667eea;
+        }
+
+        .demo-container {
+            max-width: 414px;
+            margin: 0 auto;
+            background: #f5f5f5;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        /* Tech Stack */
+        .tech-stack {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .tech-stack h2 {
+            text-align: center;
+            font-size: 36px;
+            margin-bottom: 30px;
+            color: #667eea;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .tech-category {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        }
+
+        .tech-category h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .tech-category ul {
+            list-style: none;
+        }
+
+        .tech-category li {
+            padding: 8px 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tech-category li::before {
+            content: "✓ ";
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        .footer a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 32px;
+            }
+            
+            .hero p {
+                font-size: 16px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <div class="hero">
+            <h1>🎯 Boule Pétanque Training App</h1>
+            <p>AI-Powered Training med AR, Gamification och Accessibility</p>
+            <div class="cta-buttons">
+                <a href="./web-demo/index.html" class="btn btn-primary">🎮 Prova Demo</a>
+                <a href="https://github.com/Mats6102hamberg/Boule-Petanque-Training-App" class="btn btn-secondary" target="_blank">
+                    📚 GitHub
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stats-grid">
+                <div>
+                    <div class="stat-number">16,000+</div>
+                    <div class="stat-label">Rader Kod</div>
+                </div>
+                <div>
+                    <div class="stat-number">30+</div>
+                    <div class="stat-label">Features</div>
+                </div>
+                <div>
+                    <div class="stat-number">69</div>
+                    <div class="stat-label">Filer</div>
+                </div>
+                <div>
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Open Source</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <div class="feature-title">AI-Driven Analys</div>
+                <div class="feature-description">
+                    Realtidsanalys av kastteknik med TensorFlow och OpenCV. 
+                    Mät noggrannhet, hastighet och teknik automatiskt.
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📐</div>
+                <div class="feature-title">Triangulering</div>
+                <div class="feature-description">
+                    Exakta avståndsmätningar med ARKit/ARCore och LiDAR. 
+                    Precision inom 1cm!
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎮</div>
+                <div class="feature-title">Gamification</div>
+                <div class="feature-description">
+                    Dagliga utmaningar, achievements och level-system. 
+                    Håll motivationen uppe med streak tracking!
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🥽</div>
+                <div class="feature-title">AR Enhancements</div>
+                <div class="feature-description">
+                    Virtual trajectory overlay, distance measurements och 
+                    ground plane detection i AR.
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📹</div>
+                <div class="feature-title">Video Replay</div>
+                <div class="feature-description">
+                    Slow-motion replay (0.25x - 2x) med analys-overlay. 
+                    Dela till social media!
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">♿</div>
+                <div class="feature-title">Accessibility</div>
+                <div class="feature-description">
+                    Röstkommandon, text-to-speech, färgblind-lägen och 
+                    skärmläsare-stöd.
+                </div>
+            </div>
+        </div>
+
+        <!-- Tech Stack -->
+        <div class="tech-stack">
+            <h2>🛠️ Tech Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-category">
+                    <h3>📱 Frontend</h3>
+                    <ul>
+                        <li>React Native</li>
+                        <li>Expo SDK 49</li>
+                        <li>Redux Toolkit</li>
+                        <li>Vision Camera</li>
+                        <li>ARKit/ARCore</li>
+                    </ul>
+                </div>
+
+                <div class="tech-category">
+                    <h3>🖥️ Backend</h3>
+                    <ul>
+                        <li>Node.js + Express</li>
+                        <li>MongoDB</li>
+                        <li>Redis</li>
+                        <li>Socket.io</li>
+                        <li>JWT Auth</li>
+                    </ul>
+                </div>
+
+                <div class="tech-category">
+                    <h3>🤖 AI/ML</h3>
+                    <ul>
+                        <li>Python</li>
+                        <li>TensorFlow</li>
+                        <li>OpenCV</li>
+                        <li>YOLO/SSD</li>
+                        <li>PyTorch</li>
+                    </ul>
+                </div>
+
+                <div class="tech-category">
+                    <h3>🚀 DevOps</h3>
+                    <ul>
+                        <li>Docker</li>
+                        <li>GitHub Actions</li>
+                        <li>AWS/GCP</li>
+                        <li>Vercel</li>
+                        <li>Cloudinary</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Section -->
+        <div class="demo-section">
+            <h2>📱 Interaktiv Demo</h2>
+            <p style="text-align: center; margin-bottom: 30px; color: #666;">
+                Prova appen direkt i din webbläsare!
+            </p>
+            <div style="text-align: center;">
+                <a href="./web-demo/index.html" class="btn btn-primary" style="display: inline-block;">
+                    🎮 Öppna Demo
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p style="margin-bottom: 20px;">
+            Gjort med ❤️ för pétanque-spelare världen över
+        </p>
+        <div>
+            <a href="https://github.com/Mats6102hamberg/Boule-Petanque-Training-App" target="_blank">GitHub</a>
+            <a href="https://github.com/Mats6102hamberg/Boule-Petanque-Training-App/issues" target="_blank">Issues</a>
+            <a href="mailto:mats6102hamberg@gmail.com">Kontakt</a>
+        </div>
+        <p style="margin-top: 20px; font-size: 14px; opacity: 0.8;">
+            © 2025 Mats Hamberg. MIT License.
+        </p>
+    </div>
+</body>
+</html>
