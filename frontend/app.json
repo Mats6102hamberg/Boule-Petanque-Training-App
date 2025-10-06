@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "Boule Pétanque Training",
+    "slug": "boule-petanque-training",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2E7D32"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.boulepetanque.training",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Vi behöver tillgång till kameran för att analysera dina kast",
+        "NSMicrophoneUsageDescription": "Vi behöver tillgång till mikrofonen för videoinspelning"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#2E7D32"
+      },
+      "package": "com.boulepetanque.training",
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "$(PRODUCT_NAME) behöver tillgång till kameran",
+          "enableMicrophonePermission": true
+        }
+      ]
+    ]
+  }
+}
