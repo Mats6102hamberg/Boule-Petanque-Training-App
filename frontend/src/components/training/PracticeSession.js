@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors } from '../../styles/colors';
 import Button from '../common/Button';
+import CameraView from './CameraView';
 
-const PracticeSession = ({ onComplete }) => {
+const PracticeSession = ({ sessionData, onComplete }) => {
   const [sessionActive, setSessionActive] = useState(false);
   const [currentExercise, setCurrentExercise] = useState(0);
   const [throws, setThrows] = useState([]);
@@ -104,69 +105,86 @@ const PracticeSession = ({ onComplete }) => {
 
   const progress = getCurrentProgress();
 
+  const handleDistanceMeasured = (distance) => {
+    // Automatiskt registrera kast baserat på avstånd
+    const success = distance < 0.5; // Mindre än 50cm = lyckat kast
+    recordThrow(success);
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.timer}>{formatTime(timer)}</Text>
-        <Text style={styles.exerciseCounter}>
-          Övning {currentExercise + 1}/{exercises.length}
-        </Text>
+      {/* Kamera View */}
+      <View style={styles.cameraContainer}>
+        <CameraView 
+          onDistanceMeasured={handleDistanceMeasured}
+          trainingMode={sessionData?.type || 'pointing'}
+        />
       </View>
 
-      <View style={styles.currentExercise}>
-        <Text style={styles.exerciseName}>
-          {exercises[currentExercise].name}
-        </Text>
-        <Text style={styles.exerciseDescription}>
-          {exercises[currentExercise].description}
-        </Text>
-      </View>
+      {/* Training Info Overlay */}
+      <View style={styles.overlay}>
+        <View style={styles.header}>
+          <Text style={styles.timer}>{formatTime(timer)}</Text>
+          <Text style={styles.exerciseCounter}>
+            Övning {currentExercise + 1}/{exercises.length}
+          </Text>
+        </View>
 
-      <View style={styles.progressSection}>
-        <View style={styles.progressBar}>
-          <View
-            style={[
-              styles.progressFill,
-              { width: `${(progress.completed / progress.target) * 100}%` },
-            ]}
+        <View style={styles.currentExercise}>
+          <Text style={styles.exerciseName}>
+            {exercises[currentExercise].name}
+          </Text>
+          <Text style={styles.exerciseDescription}>
+            {exercises[currentExercise].description}
+          </Text>
+        </View>
+
+        <View style={styles.progressSection}>
+          <View style={styles.progressBar}>
+            <View
+              style={[
+                styles.progressFill,
+                { width: `${(progress.completed / progress.target) * 100}%` },
+              ]}
+            />
+          </View>
+          <Text style={styles.progressText}>
+            {progress.completed}/{progress.target} kast
+          </Text>
+          {progress.completed > 0 && (
+            <Text style={styles.successRate}>
+              Träffsäkerhet: {progress.successRate.toFixed(0)}%
+            </Text>
+          )}
+        </View>
+
+        <View style={styles.actions}>
+          <Button
+            title="✓ Lyckades"
+            onPress={() => recordThrow(true)}
+            variant="primary"
+            style={styles.actionButton}
+          />
+          <Button
+            title="✗ Missade"
+            onPress={() => recordThrow(false)}
+            variant="outline"
+            style={styles.actionButton}
           />
         </View>
-        <Text style={styles.progressText}>
-          {progress.completed}/{progress.target} kast
-        </Text>
-        {progress.completed > 0 && (
-          <Text style={styles.successRate}>
-            Träffsäkerhet: {progress.successRate.toFixed(0)}%
-          </Text>
+
+        {progress.completed >= progress.target && (
+          <Button
+            title={currentExercise < exercises.length - 1 ? 'Nästa övning' : 'Avsluta pass'}
+            onPress={nextExercise}
+            style={styles.nextButton}
+          />
         )}
+
+        <TouchableOpacity onPress={endSession} style={styles.endButton}>
+          <Text style={styles.endButtonText}>Avsluta tidigt</Text>
+        </TouchableOpacity>
       </View>
-
-      <View style={styles.actions}>
-        <Button
-          title="✓ Lyckades"
-          onPress={() => recordThrow(true)}
-          variant="primary"
-          style={styles.actionButton}
-        />
-        <Button
-          title="✗ Missade"
-          onPress={() => recordThrow(false)}
-          variant="outline"
-          style={styles.actionButton}
-        />
-      </View>
-
-      {progress.completed >= progress.target && (
-        <Button
-          title={currentExercise < exercises.length - 1 ? 'Nästa övning' : 'Avsluta pass'}
-          onPress={nextExercise}
-          style={styles.nextButton}
-        />
-      )}
-
-      <TouchableOpacity onPress={endSession} style={styles.endButton}>
-        <Text style={styles.endButtonText}>Avsluta tidigt</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -175,7 +193,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  cameraContainer: {
+    flex: 1,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     padding: 16,
+    backgroundColor: 'rgba(0,0,0,0.3)',
   },
   title: {
     fontSize: 28,

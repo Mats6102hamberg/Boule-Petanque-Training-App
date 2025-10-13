@@ -1,87 +1,97 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Camera, useCameraDevices, useFrameProcessor } from 'react-native-vision-camera';
-import { runOnJS } from 'react-native-reanimated';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { Camera } from 'expo-camera';
 import { colors } from '../../styles/colors';
+import axios from 'axios';
 
-const CameraView = ({ onCapture, onAnalysis }) => {
-  const camera = useRef(null);
-  const devices = useCameraDevices();
-  const device = devices.back;
+const API_URL = process.env.API_URL || 'http://localhost:3000/api';
+
+const CameraView = ({ onCapture, onAnalysis, onDistanceMeasured, trainingMode }) => {
+  const cameraRef = useRef(null);
   const [hasPermission, setHasPermission] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [detectedObjects, setDetectedObjects] = useState([]);
+  const [distance, setDistance] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const status = await Camera.requestCameraPermission();
-      setHasPermission(status === 'authorized');
+      const { status } = await Camera.requestCameraPermissionsAsync();
+      setHasPermission(status === 'granted');
     })();
   }, []);
 
-  const updateDetectedObjects = (objects) => {
-    setDetectedObjects(objects);
-    if (onAnalysis) {
-      onAnalysis(objects);
+  const analyzeImage = async (photoUri) => {
+    setIsAnalyzing(true);
+    try {
+      // Skapa FormData för att skicka bilden
+      const formData = new FormData();
+      formData.append('image', {
+        uri: photoUri,
+        type: 'image/jpeg',
+        name: 'training-photo.jpg',
+      });
+      formData.append('trainingMode', trainingMode);
+
+      // Skicka till backend för analys
+      const response = await axios.post(`${API_URL}/training/analyze`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const { distance: measuredDistance, objects } = response.data;
+      
+      setDistance(measuredDistance);
+      setDetectedObjects(objects || []);
+      
+      if (onDistanceMeasured && measuredDistance !== null) {
+        onDistanceMeasured(measuredDistance);
+      }
+      
+      if (onAnalysis) {
+        onAnalysis(response.data);
+      }
+
+      // Visa resultat
+      Alert.alert(
+        'Analys klar! 🎯',
+        `Avstånd till cochonnet: ${(measuredDistance * 100).toFixed(1)} cm`,
+        [{ text: 'OK' }]
+      );
+    } catch (error) {
+      console.error('Analys fel:', error);
+      Alert.alert('Fel', 'Kunde inte analysera bilden. Försök igen.');
+    } finally {
+      setIsAnalyzing(false);
     }
   };
-
-  const frameProcessor = useFrameProcessor((frame) => {
-    'worklet';
-    // Analysera varje bildruta i realtid
-    // Detta skulle integreras med AI-modellen
-    const objects = {
-      boules: [],
-      cochonnet: null,
-      timestamp: Date.now()
-    };
-    
-    // Uppdatera UI med resultat
-    runOnJS(updateDetectedObjects)(objects);
-  }, []);
 
   const handleCapture = async () => {
-    if (camera.current) {
-      const photo = await camera.current.takePhoto({
-        qualityPrioritization: 'quality',
-      });
-      onCapture(photo);
-    }
-  };
-
-  const toggleRecording = async () => {
-    if (!camera.current) return;
-
-    if (isRecording) {
-      await camera.current.stopRecording();
-      setIsRecording(false);
-    } else {
-      setIsRecording(true);
-      camera.current.startRecording({
-        onRecordingFinished: (video) => {
-          setIsRecording(false);
-          onCapture(video);
-        },
-        onRecordingError: (error) => {
-          console.error(error);
-          setIsRecording(false);
-        },
-      });
+    if (cameraRef.current) {
+      try {
+        const photo = await cameraRef.current.takePictureAsync({
+          quality: 0.8,
+          base64: false,
+        });
+        
+        if (onCapture) {
+          onCapture(photo);
+        }
+        
+        // Analysera bilden automatiskt
+        await analyzeImage(photo.uri);
+      } catch (error) {
+        console.error('Capture error:', error);
+        Alert.alert('Fel', 'Kunde inte ta bild');
+      }
     }
   };
 
   if (!hasPermission) {
     return (
       <View style={styles.container}>
-        <Text>Kamerabehörighet krävs</Text>
-      </View>
-    );
-  }
-
-  if (!device) {
-    return (
-      <View style={styles.container}>
-        <Text>Ingen kamera hittades</Text>
+        <Text style={styles.permissionText}>Kamerabehörighet krävs</Text>
       </View>
     );
   }
@@ -89,22 +99,32 @@ const CameraView = ({ onCapture, onAnalysis }) => {
   return (
     <View style={styles.container}>
       <Camera
-        ref={camera}
+        ref={cameraRef}
         style={StyleSheet.absoluteFill}
-        device={device}
-        isActive={true}
-        photo={true}
-        video={true}
-        frameProcessor={frameProcessor}
+        type={Camera.Constants.Type.back}
       />
       
       {/* Overlay för detekterade objekt */}
       <View style={styles.overlay}>
-        {detectedObjects.length > 0 && (
+        {distance !== null && (
           <View style={styles.detectionInfo}>
             <Text style={styles.detectionText}>
-              Detekterade objekt: {detectedObjects.length}
+              📏 Avstånd: {(distance * 100).toFixed(1)} cm
             </Text>
+          </View>
+        )}
+        
+        {detectedObjects.length > 0 && (
+          <View style={[styles.detectionInfo, { marginTop: 10 }]}>
+            <Text style={styles.detectionText}>
+              🎯 Detekterade objekt: {detectedObjects.length}
+            </Text>
+          </View>
+        )}
+
+        {isAnalyzing && (
+          <View style={styles.analyzingOverlay}>
+            <Text style={styles.analyzingText}>Analyserar... 🤖</Text>
           </View>
         )}
       </View>
@@ -112,20 +132,18 @@ const CameraView = ({ onCapture, onAnalysis }) => {
       {/* Kontroller */}
       <View style={styles.controls}>
         <TouchableOpacity
-          style={styles.captureButton}
+          style={[styles.captureButton, isAnalyzing && styles.captureButtonDisabled]}
           onPress={handleCapture}
+          disabled={isAnalyzing}
         >
           <View style={styles.captureButtonInner} />
         </TouchableOpacity>
         
-        <TouchableOpacity
-          style={[styles.recordButton, isRecording && styles.recordingActive]}
-          onPress={toggleRecording}
-        >
-          <Text style={styles.recordButtonText}>
-            {isRecording ? '⏹ Stoppa' : '⏺ Spela in'}
-          </Text>
-        </TouchableOpacity>
+        <Text style={styles.instructionText}>
+          {trainingMode === 'pointing' && '📍 Pointing: Sikta nära cochonnet'}
+          {trainingMode === 'shooting' && '💥 Shooting: Träffa motståndarens boule'}
+          {trainingMode === 'rolling' && '🎳 Rolling: Rulla boulen'}
+        </Text>
       </View>
     </View>
   );
@@ -136,20 +154,44 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
+  permissionText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
+    marginTop: 100,
+  },
   overlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-start',
     padding: 20,
+    pointerEvents: 'box-none',
   },
   detectionInfo: {
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: 'rgba(46, 125, 50, 0.9)',
     padding: 12,
     borderRadius: 8,
     alignSelf: 'flex-start',
   },
   detectionText: {
     color: '#fff',
-    fontSize: 14,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  analyzingOverlay: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -75 }, { translateY: -25 }],
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    padding: 20,
+    borderRadius: 12,
+    width: 150,
+  },
+  analyzingText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
   },
   controls: {
     position: 'absolute',
@@ -167,25 +209,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+  captureButtonDisabled: {
+    opacity: 0.5,
+  },
   captureButtonInner: {
     width: 60,
     height: 60,
     borderRadius: 30,
     backgroundColor: '#fff',
   },
-  recordButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 24,
-  },
-  recordingActive: {
-    backgroundColor: colors.error,
-  },
-  recordButtonText: {
+  instructionText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    textAlign: 'center',
   },
 });
 
