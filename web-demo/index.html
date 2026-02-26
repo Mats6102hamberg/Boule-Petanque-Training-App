@@ -11,660 +11,541 @@
     <meta name="apple-mobile-web-app-title" content="Boule Training">
     <link rel="apple-touch-icon" href="icon-192.png">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 414px;
-            margin: 0 auto;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f5f5f5;
-            border-radius: 30px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-
-        .phone-frame {
-            background: #000;
-            padding: 10px;
-            border-radius: 30px;
-        }
-
-        .screen {
-            background: #fff;
-            border-radius: 20px;
-            overflow: hidden;
-            height: 844px;
-            position: relative;
+            min-height: 100vh;
+            max-width: 480px;
+            margin: 0 auto;
         }
 
         /* Header */
         .header {
             background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
             color: white;
-            padding: 50px 20px 20px;
+            padding: 44px 20px 18px;
             text-align: center;
         }
+        .header h1 { font-size: 22px; margin-bottom: 2px; }
+        .header p { font-size: 13px; opacity: 0.9; }
 
-        .header h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
+        /* Nav */
+        .nav { display: flex; background: white; border-bottom: 1px solid #e0e0e0; position: sticky; top: 0; z-index: 100; }
+        .nav-btn {
+            flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px;
+            padding: 10px 4px; border: none; background: none; cursor: pointer;
+            border-bottom: 3px solid transparent; transition: all 0.2s; font-size: 11px; font-weight: 500; color: #666;
         }
-
-        .header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        /* Navigation */
-        .nav-tabs {
-            display: flex;
-            background: #fff;
-            border-bottom: 1px solid #e0e0e0;
-            overflow-x: auto;
-        }
-
-        .nav-tab {
-            flex: 1;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-            font-size: 12px;
-        }
-
-        .nav-tab.active {
-            border-bottom-color: #2E7D32;
-            color: #2E7D32;
-            font-weight: 600;
-        }
-
-        .nav-tab:hover {
-            background: #f5f5f5;
-        }
+        .nav-btn.active { border-bottom-color: #2E7D32; color: #2E7D32; }
+        .nav-btn span:first-child { font-size: 18px; }
 
         /* Content */
-        .content {
-            padding: 20px;
-            overflow-y: auto;
-            height: calc(844px - 200px);
-        }
+        .content { padding: 16px; padding-bottom: 32px; }
+        .tab { display: none; animation: fadeIn 0.3s ease; }
+        .tab.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        .tab-content {
-            display: none;
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .stat {
+            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+            color: white; padding: 18px; border-radius: 14px; text-align: center;
         }
+        .stat-val { font-size: 28px; font-weight: bold; margin-bottom: 2px; }
+        .stat-lbl { font-size: 11px; opacity: 0.9; }
 
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s;
+        /* Streak */
+        .streak {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            color: white; padding: 14px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px;
         }
+        .streak-fire { font-size: 26px; }
+        .streak-num { font-size: 28px; font-weight: bold; }
+        .streak-txt { font-size: 13px; opacity: 0.9; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Level */
+        .level {
+            background: white; border-radius: 14px; padding: 14px; margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
+        .level-row { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+        .progress { height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #2E7D32, #4CAF50); border-radius: 4px; transition: width 0.4s; }
 
         /* Cards */
         .card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: white; border-radius: 14px; padding: 16px; margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .card-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 4px; }
+        .badge { padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+        .badge-green { background: #E8F5E9; color: #2E7D32; }
+        .badge-red { background: #FFEBEE; color: #D32F2F; }
+
+        /* Section title */
+        .section-title { font-size: 16px; font-weight: 600; margin: 18px 0 10px; color: #333; }
+
+        /* Throw types */
+        .throw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+        .throw-card {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 16px 8px; background: white; border: 2px solid #e0e0e0;
+            border-radius: 12px; cursor: pointer; transition: all 0.2s; font-size: 13px; font-weight: 600;
+        }
+        .throw-card:hover { border-color: #4CAF50; }
+        .throw-card.selected { border-color: #2E7D32; background: #E8F5E9; }
+        .throw-card span:first-child { font-size: 28px; }
+
+        /* Result */
+        .result {
+            background: white; border-radius: 14px; padding: 20px; margin-bottom: 14px;
+            text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .result-acc { font-size: 48px; font-weight: bold; margin-bottom: 6px; }
+        .result-details { display: flex; justify-content: center; gap: 20px; font-size: 13px; color: #666; margin-bottom: 10px; }
+        .result-bar { height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+        .result-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+
+        /* Session summary */
+        .summary {
+            background: white; border-radius: 12px; padding: 10px 14px;
+            display: flex; justify-content: space-between; font-size: 13px; font-weight: 600;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04); margin-bottom: 10px;
         }
 
-        .card-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+        /* Scoreboard */
+        .scoreboard { display: flex; align-items: stretch; margin-bottom: 14px; }
+        .score-side {
+            flex: 1; background: white; border-radius: 14px; padding: 18px; text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-direction: column; align-items: center; gap: 6px;
         }
-
-        .card-description {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.5;
+        .score-label { font-size: 13px; font-weight: 600; }
+        .score-num { font-size: 44px; font-weight: bold; color: #2E7D32; }
+        .score-num.opp { color: #D32F2F; }
+        .score-vs { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 10px; }
+        .score-vs span:first-child { font-size: 18px; font-weight: bold; color: #888; }
+        .score-vs span:last-child { font-size: 10px; color: #aaa; margin-top: 2px; }
+        .score-btn {
+            padding: 8px 18px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold;
+            cursor: pointer; color: white; transition: all 0.2s;
         }
-
-        /* Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 16px;
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            opacity: 0.9;
-        }
+        .score-btn.p { background: #2E7D32; }
+        .score-btn.o { background: #D32F2F; }
+        .score-btn:hover { transform: scale(1.05); }
 
         /* Challenges */
-        .challenge-item {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border-left: 4px solid #2E7D32;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .challenge {
+            background: white; border-radius: 12px; padding: 14px; margin-bottom: 10px;
+            border-left: 4px solid #2E7D32; box-shadow: 0 2px 6px rgba(0,0,0,0.06);
         }
-
-        .challenge-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .challenge-title {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .challenge-reward {
-            background: #FFF3E0;
-            color: #F57C00;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .progress-bar {
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 8px 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #2E7D32 0%, #4CAF50 100%);
-            border-radius: 4px;
-            transition: width 0.3s;
-        }
+        .challenge-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .challenge-title { font-size: 14px; font-weight: 600; }
+        .challenge-reward { background: #FFF3E0; color: #F57C00; padding: 2px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+        .challenge-desc { font-size: 12px; color: #888; margin-bottom: 8px; }
+        .challenge-prog { font-size: 11px; color: #888; text-align: right; margin-top: 4px; }
+        .challenge-prog .done { color: #2E7D32; font-weight: 600; }
 
         /* Achievements */
-        .achievement-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+        .ach-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .ach {
+            background: white; border-radius: 12px; padding: 14px; text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: transform 0.2s;
         }
+        .ach:hover { transform: translateY(-2px); }
+        .ach.locked { opacity: 0.35; filter: grayscale(80%); }
+        .ach-icon { font-size: 36px; margin-bottom: 4px; }
+        .ach-name { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+        .ach-pts { font-size: 11px; color: #2E7D32; font-weight: 600; }
 
-        .achievement-card {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .achievement-icon {
-            font-size: 48px;
-            margin-bottom: 8px;
-        }
-
-        .achievement-name {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .achievement-points {
-            font-size: 12px;
-            color: #2E7D32;
-            font-weight: 600;
-        }
-
-        .achievement-locked {
-            opacity: 0.4;
-            filter: grayscale(100%);
-        }
-
-        /* Button */
+        /* Buttons */
         .btn {
-            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
-            color: white;
-            border: none;
-            padding: 16px 24px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 12px;
-            box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
-            transition: transform 0.2s;
+            display: block; width: 100%; padding: 14px; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: transform 0.2s, box-shadow 0.2s;
         }
+        .btn-go {
+            background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%); color: white;
+            box-shadow: 0 4px 12px rgba(46,125,50,0.3);
+        }
+        .btn-go:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(46,125,50,0.4); }
+        .btn-go:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .btn-stop {
+            background: white; color: #D32F2F; border: 2px solid #D32F2F;
+        }
+        .btn-stop:hover { background: #FFEBEE; }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(46, 125, 50, 0.4);
+        /* Notification */
+        .notif {
+            position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+            background: #2E7D32; color: white; padding: 10px 22px; border-radius: 10px;
+            font-size: 13px; font-weight: 600; z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2); animation: slideD 0.3s ease;
+            max-width: 90%; text-align: center; display: none;
         }
+        @keyframes slideD { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        /* AR Preview */
-        .ar-preview {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border-radius: 16px;
-            padding: 20px;
-            color: white;
-            text-align: center;
-            margin-bottom: 16px;
-        }
-
-        .ar-icon {
-            font-size: 64px;
-            margin-bottom: 12px;
-        }
-
-        /* Voice Command */
-        .voice-button {
-            background: linear-gradient(135deg, #F44336 0%, #D32F2F 100%);
-            color: white;
-            border: none;
-            width: 80px;
-            height: 80px;
-            border-radius: 40px;
-            font-size: 32px;
-            cursor: pointer;
-            margin: 20px auto;
-            display: block;
-            box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
-            transition: transform 0.2s;
-        }
-
-        .voice-button:hover {
-            transform: scale(1.1);
-        }
-
-        .voice-button:active {
-            transform: scale(0.95);
-        }
-
-        /* Mobile: remove phone frame, full screen app */
-        @media (max-width: 480px) {
-            body { background: #f5f5f5; padding: 0; }
-            .container { max-width: 100%; border-radius: 0; }
-            .phone-frame { background: none; padding: 0; border-radius: 0; }
-            .screen { border-radius: 0; height: auto; min-height: 100vh; }
-            .content { height: auto; min-height: calc(100vh - 160px); }
-        }
+        /* Empty */
+        .empty { text-align: center; padding: 28px 16px; color: #888; font-size: 14px; }
 
         /* Install banner */
         .install-banner {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 14px 20px;
-            text-align: center;
-            font-size: 14px;
-            cursor: pointer;
-            display: none;
+            color: white; padding: 12px 20px; text-align: center; font-size: 13px;
+            cursor: pointer; display: none;
         }
         .install-banner strong { font-weight: 700; }
-
-        /* Streak */
-        .streak-card {
-            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 16px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .streak-icon {
-            font-size: 48px;
-            margin-bottom: 8px;
-        }
-
-        .streak-number {
-            font-size: 36px;
-            font-weight: bold;
-        }
-
-        .streak-label {
-            font-size: 14px;
-            opacity: 0.9;
-        }
     </style>
 </head>
 <body>
-    <!-- Install banner (visas om PWA-install är tillgänglig) -->
-    <div class="install-banner" id="install-banner" onclick="installApp()">
-        <strong>Installera appen</strong> – Lägg till på hemskärmen för snabb åtkomst
-    </div>
 
-    <div class="container">
-        <div class="phone-frame">
-            <div class="screen">
-                <!-- Header -->
-                <div class="header">
-                    <h1>🎯 Boule Pétanque</h1>
-                    <p>AI-Powered Training App</p>
-                </div>
+<div class="notif" id="notif"></div>
 
-                <!-- Navigation -->
-                <div class="nav-tabs">
-                    <div class="nav-tab active" onclick="showTab('home')">🏠 Hem</div>
-                    <div class="nav-tab" onclick="showTab('challenges')">🎮 Utmaningar</div>
-                    <div class="nav-tab" onclick="showTab('achievements')">🏆 Achievements</div>
-                    <div class="nav-tab" onclick="showTab('ar')">🥽 AR</div>
-                    <div class="nav-tab" onclick="showTab('voice')">🎤 Röst</div>
-                </div>
+<div class="install-banner" id="install-banner" onclick="installApp()">
+    <strong>Installera appen</strong> – Lägg till på hemskärmen
+</div>
 
-                <!-- Content -->
-                <div class="content">
-                    <!-- Home Tab -->
-                    <div id="home" class="tab-content active">
-                        <div class="stats-grid">
-                            <div class="stat-card">
-                                <div class="stat-value">85%</div>
-                                <div class="stat-label">Noggrannhet</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value">45</div>
-                                <div class="stat-label">Träningspass</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value">18</div>
-                                <div class="stat-label">Vinster</div>
-                            </div>
-                            <div class="stat-card">
-                                <div class="stat-value">1250</div>
-                                <div class="stat-label">Totalt kast</div>
-                            </div>
-                        </div>
+<header class="header">
+    <h1>🎯 Boule Pétanque</h1>
+    <p>AI-Powered Training App</p>
+</header>
 
-                        <div class="card">
-                            <div class="card-title">📊 AI-Driven Analys</div>
-                            <div class="card-description">
-                                Få realtidsanalys av dina kast med AI och datorseende. 
-                                Mät avstånd, hastighet och teknik automatiskt.
-                            </div>
-                            <button class="btn">Starta Träning</button>
-                        </div>
+<nav class="nav" id="nav">
+    <button class="nav-btn active" data-tab="home"><span>🏠</span><span>Hem</span></button>
+    <button class="nav-btn" data-tab="training"><span>🎯</span><span>Träning</span></button>
+    <button class="nav-btn" data-tab="game"><span>🏆</span><span>Spel</span></button>
+    <button class="nav-btn" data-tab="challenges"><span>🎮</span><span>Utmaningar</span></button>
+    <button class="nav-btn" data-tab="achievements"><span>⭐</span><span>Achievements</span></button>
+</nav>
 
-                        <div class="card">
-                            <div class="card-title">📐 Triangulering</div>
-                            <div class="card-description">
-                                Exakta avståndsmätningar med ARKit/ARCore och LiDAR. 
-                                Precision inom 1cm!
-                            </div>
-                        </div>
+<main class="content">
+    <!-- HOME -->
+    <div class="tab active" id="tab-home"></div>
 
-                        <div class="card">
-                            <div class="card-title">📹 Video Replay</div>
-                            <div class="card-description">
-                                Spela upp dina kast i slow-motion (0.25x - 2x). 
-                                Dela till social media!
-                            </div>
-                        </div>
-                    </div>
+    <!-- TRAINING -->
+    <div class="tab" id="tab-training"></div>
 
-                    <!-- Challenges Tab -->
-                    <div id="challenges" class="tab-content">
-                        <div class="streak-card">
-                            <div class="streak-icon">🔥</div>
-                            <div class="streak-number">7</div>
-                            <div class="streak-label">Dagars Streak</div>
-                        </div>
+    <!-- GAME -->
+    <div class="tab" id="tab-game"></div>
 
-                        <h3 style="margin-bottom: 16px;">Dagens Utmaningar</h3>
+    <!-- CHALLENGES -->
+    <div class="tab" id="tab-challenges"></div>
 
-                        <div class="challenge-item">
-                            <div class="challenge-header">
-                                <div class="challenge-title">🎯 Precision Master</div>
-                                <div class="challenge-reward">+50p</div>
-                            </div>
-                            <div class="card-description" style="font-size: 12px; margin-bottom: 8px;">
-                                Gör 10 kast med över 80% noggrannhet
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 70%"></div>
-                            </div>
-                            <div style="font-size: 12px; color: #666; text-align: right;">7/10</div>
-                        </div>
+    <!-- ACHIEVEMENTS -->
+    <div class="tab" id="tab-achievements"></div>
+</main>
 
-                        <div class="challenge-item">
-                            <div class="challenge-header">
-                                <div class="challenge-title">⚡ Speed Demon</div>
-                                <div class="challenge-reward">+30p</div>
-                            </div>
-                            <div class="card-description" style="font-size: 12px; margin-bottom: 8px;">
-                                Slutför ett träningspass på under 15 minuter
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 100%"></div>
-                            </div>
-                            <div style="font-size: 12px; color: #4CAF50; text-align: right;">✓ Klar!</div>
-                        </div>
+<script>
+(function() {
+    /* ─── DATA ─── */
+    var LS = 'boule_';
+    function load(key, def) { try { var d = localStorage.getItem(LS+key); return d ? JSON.parse(d) : def; } catch(e) { return def; } }
+    function save(key, val) { localStorage.setItem(LS+key, JSON.stringify(val)); }
 
-                        <div class="challenge-item">
-                            <div class="challenge-header">
-                                <div class="challenge-title">🏆 Champion</div>
-                                <div class="challenge-reward">+100p</div>
-                            </div>
-                            <div class="card-description" style="font-size: 12px; margin-bottom: 8px;">
-                                Vinn 3 matcher idag
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 33%"></div>
-                            </div>
-                            <div style="font-size: 12px; color: #666; text-align: right;">1/3</div>
-                        </div>
-                    </div>
+    var stats = load('stats2', { accuracy: 0, totalThrows: 0, totalSessions: 0, wins: 0, streak: 0, lastTrainingDate: null, level: 1, points: 0, ptnl: 500 });
+    var sessions = load('sessions2', []);
+    var games = load('games2', []);
+    var achievements = load('ach2', [
+        { id:'first_throw', name:'Första Kastet', icon:'🎯', pts:10, unlocked:false, req:'Gör ditt första kast' },
+        { id:'dedicated', name:'Dedikerad Tränare', icon:'💪', pts:100, unlocked:false, req:'10 träningspass' },
+        { id:'first_win', name:'Första Segern', icon:'🏆', pts:50, unlocked:false, req:'Vinn ett spel' },
+        { id:'week_warrior', name:'Veckokrigar', icon:'🔥', pts:150, unlocked:false, req:'7 dagars streak' },
+        { id:'champion', name:'Champion', icon:'👑', pts:500, unlocked:false, req:'Nå level 10' },
+        { id:'precision', name:'Precisionsmästare', icon:'🎖️', pts:1000, unlocked:false, req:'90% noggrannhet' },
+        { id:'century', name:'100 Kast', icon:'💯', pts:200, unlocked:false, req:'100 totala kast' },
+    ]);
 
-                    <!-- Achievements Tab -->
-                    <div id="achievements" class="tab-content">
-                        <div class="card" style="background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%); color: white; text-align: center;">
-                            <div style="font-size: 48px; margin-bottom: 8px;">⭐</div>
-                            <div style="font-size: 28px; font-weight: bold; margin-bottom: 4px;">Level 5</div>
-                            <div style="font-size: 16px; opacity: 0.9;">2,450 poäng</div>
-                            <div class="progress-bar" style="margin-top: 16px; background: rgba(255,255,255,0.3);">
-                                <div class="progress-fill" style="width: 45%; background: white;"></div>
-                            </div>
-                            <div style="font-size: 12px; margin-top: 8px; opacity: 0.9;">550 poäng till Level 6</div>
-                        </div>
+    // Training state
+    var throwType = null, isTraining = false, throwResult = null, sessionThrows = [];
+    // Game state
+    var gameActive = false, gameScore = { p: 0, o: 0 }, gameTarget = 13;
 
-                        <h3 style="margin: 20px 0 16px;">🏆 Dina Achievements</h3>
+    /* ─── UTILS ─── */
+    function notify(msg) {
+        var el = document.getElementById('notif');
+        el.textContent = msg; el.style.display = 'block';
+        setTimeout(function() { el.style.display = 'none'; }, 3000);
+    }
 
-                        <div class="achievement-grid">
-                            <div class="achievement-card">
-                                <div class="achievement-icon">🎯</div>
-                                <div class="achievement-name">Första Kastet</div>
-                                <div class="achievement-points">+10p</div>
-                            </div>
+    function updateStreak() {
+        var today = new Date().toDateString();
+        if (stats.lastTrainingDate === today) return;
+        var y = new Date(); y.setDate(y.getDate()-1);
+        stats.streak = (stats.lastTrainingDate === y.toDateString()) ? stats.streak + 1 : 1;
+        stats.lastTrainingDate = today;
+    }
 
-                            <div class="achievement-card">
-                                <div class="achievement-icon">💪</div>
-                                <div class="achievement-name">Dedikerad Tränare</div>
-                                <div class="achievement-points">+100p</div>
-                            </div>
-
-                            <div class="achievement-card">
-                                <div class="achievement-icon">🏆</div>
-                                <div class="achievement-name">Första Segern</div>
-                                <div class="achievement-points">+50p</div>
-                            </div>
-
-                            <div class="achievement-card">
-                                <div class="achievement-icon">🔥</div>
-                                <div class="achievement-name">Veckokrigar</div>
-                                <div class="achievement-points">+150p</div>
-                            </div>
-
-                            <div class="achievement-card achievement-locked">
-                                <div class="achievement-icon">👑</div>
-                                <div class="achievement-name">Champion</div>
-                                <div class="achievement-points">+500p</div>
-                            </div>
-
-                            <div class="achievement-card achievement-locked">
-                                <div class="achievement-icon">🎖️</div>
-                                <div class="achievement-name">Precisionsmästare</div>
-                                <div class="achievement-points">+1000p</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- AR Tab -->
-                    <div id="ar" class="tab-content">
-                        <div class="ar-preview">
-                            <div class="ar-icon">🥽</div>
-                            <h3 style="margin-bottom: 8px;">AR-Förbättringar</h3>
-                            <p style="font-size: 14px; opacity: 0.9;">
-                                Aktivera kameran för att se AR-funktioner
-                            </p>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-title">📐 Virtual Trajectory</div>
-                            <div class="card-description">
-                                Se den ideala kastbanan i AR. Visar var boulen kommer att landa.
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-title">📏 Distance Measurements</div>
-                            <div class="card-description">
-                                Mät avstånd i realtid med AR-overlay. Precision inom 1cm.
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-title">🎯 Object Highlighting</div>
-                            <div class="card-description">
-                                Automatisk highlighting av boular och cochonnet i AR.
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-title">🌐 Ground Plane Detection</div>
-                            <div class="card-description">
-                                ARKit/ARCore detekterar spelplan automatiskt.
-                            </div>
-                        </div>
-
-                        <button class="btn">Aktivera AR-Kamera</button>
-                    </div>
-
-                    <!-- Voice Tab -->
-                    <div id="voice" class="tab-content">
-                        <div class="card" style="text-align: center;">
-                            <div class="card-title" style="justify-content: center;">🎤 Röstkommandon</div>
-                            <div class="card-description" style="margin-bottom: 16px;">
-                                Styr appen med rösten. Handsfree-träning!
-                            </div>
-                            <button class="voice-button">🎙️</button>
-                            <p style="font-size: 12px; color: #666;">Tryck för att börja</p>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-title">📋 Tillgängliga Kommandon</div>
-                            <div class="card-description">
-                                <strong>Träning:</strong><br>
-                                • "Starta träning"<br>
-                                • "Stoppa träning"<br>
-                                • "Spara kast"<br><br>
-                                
-                                <strong>Kamera:</strong><br>
-                                • "Ta foto"<br>
-                                • "Spela in"<br>
-                                • "Stoppa inspelning"<br><br>
-                                
-                                <strong>AR:</strong><br>
-                                • "Visa bana"<br>
-                                • "Mät avstånd"<br>
-                                • "Kalibrera"
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-title">🔊 Text-to-Speech</div>
-                            <div class="card-description">
-                                Få kastanalys uppläst automatiskt. Perfekt för handsfree-träning.
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-title">♿ Tillgänglighet</div>
-                            <div class="card-description">
-                                • 4 färgblind-lägen<br>
-                                • Hög kontrast<br>
-                                • Större text (+30%)<br>
-                                • Skärmläsare-stöd
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function showTab(tabName) {
-            var tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(function(tab) { tab.classList.remove('active'); });
-            var navTabs = document.querySelectorAll('.nav-tab');
-            navTabs.forEach(function(nav) { nav.classList.remove('active'); });
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-        }
-
-        // PWA install
-        var deferredPrompt;
-        var installBanner = document.getElementById('install-banner');
-
-        window.addEventListener('beforeinstallprompt', function(e) {
-            e.preventDefault();
-            deferredPrompt = e;
-            if (installBanner) installBanner.style.display = 'block';
+    function checkAch() {
+        var checks = [
+            ['first_throw', stats.totalThrows >= 1],
+            ['dedicated', stats.totalSessions >= 10],
+            ['first_win', stats.wins >= 1],
+            ['week_warrior', stats.streak >= 7],
+            ['champion', stats.level >= 10],
+            ['precision', stats.accuracy >= 90],
+            ['century', stats.totalThrows >= 100],
+        ];
+        checks.forEach(function(c) {
+            var a = achievements.find(function(x) { return x.id === c[0]; });
+            if (a && !a.unlocked && c[1]) {
+                a.unlocked = true;
+                stats.points += a.pts;
+                notify('Achievement: ' + a.icon + ' ' + a.name + ' (+' + a.pts + 'p)');
+            }
         });
+        while (stats.points >= stats.ptnl) {
+            stats.level += 1;
+            stats.points -= stats.ptnl;
+            stats.ptnl = Math.floor(stats.ptnl * 1.3);
+            notify('Level Up! Du är nu Level ' + stats.level);
+        }
+        save('ach2', achievements);
+        save('stats2', stats);
+    }
 
-        function installApp() {
-            if (!deferredPrompt) return;
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(function() {
-                deferredPrompt = null;
-                if (installBanner) installBanner.style.display = 'none';
+    function accColor(v) { return v >= 80 ? '#2E7D32' : v >= 60 ? '#F57C00' : '#D32F2F'; }
+
+    /* ─── TAB SWITCHING ─── */
+    var navBtns = document.querySelectorAll('.nav-btn');
+    navBtns.forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            navBtns.forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+            document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+            document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+            render();
+        });
+    });
+
+    /* ─── RENDER ─── */
+    function render() {
+        renderHome();
+        renderTraining();
+        renderGame();
+        renderChallenges();
+        renderAchievements();
+    }
+
+    function renderHome() {
+        var h = '';
+        h += '<div class="stats-grid">';
+        h += '<div class="stat"><div class="stat-val">' + stats.accuracy + '%</div><div class="stat-lbl">Noggrannhet</div></div>';
+        h += '<div class="stat"><div class="stat-val">' + stats.totalSessions + '</div><div class="stat-lbl">Träningspass</div></div>';
+        h += '<div class="stat"><div class="stat-val">' + stats.wins + '</div><div class="stat-lbl">Vinster</div></div>';
+        h += '<div class="stat"><div class="stat-val">' + stats.totalThrows + '</div><div class="stat-lbl">Totalt kast</div></div>';
+        h += '</div>';
+        if (stats.streak > 0) {
+            h += '<div class="streak"><span class="streak-fire">🔥</span><span class="streak-num">' + stats.streak + '</span><span class="streak-txt">dagars streak</span></div>';
+        }
+        h += '<div class="level"><div class="level-row"><span>⭐ Level ' + stats.level + '</span><span>' + stats.points + ' / ' + stats.ptnl + ' p</span></div>';
+        h += '<div class="progress"><div class="progress-fill" style="width:' + (stats.points/stats.ptnl*100) + '%"></div></div></div>';
+        h += '<div class="section-title">Senaste träningspass</div>';
+        if (sessions.length === 0) {
+            h += '<div class="empty">Inga träningspass ännu. Starta din första träning!</div>';
+        } else {
+            sessions.slice(0, 5).forEach(function(s) {
+                h += '<div class="card"><div class="card-row"><span style="font-weight:600">' + new Date(s.date).toLocaleDateString('sv-SE') + '</span><span class="badge badge-green">' + s.throws + ' kast</span></div>';
+                h += '<div class="card-row"><span>Noggrannhet: ' + s.accuracy + '%</span><span style="color:#888;font-size:11px;text-transform:capitalize">' + s.type + '</span></div></div>';
             });
         }
+        document.getElementById('tab-home').innerHTML = h;
+    }
 
-        // Register service worker
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
+    function renderTraining() {
+        var h = '';
+        if (!isTraining) {
+            h += '<div class="section-title">Välj kasttyp</div>';
+            h += '<div class="throw-grid">';
+            var types = [['pointing','Pointing','🎯'],['shooting','Shooting','💥'],['rolling','Rolling','🎱'],['lob','Lob','🌈']];
+            types.forEach(function(t) {
+                h += '<div class="throw-card' + (throwType===t[0]?' selected':'') + '" onclick="app.selectThrow(\'' + t[0] + '\')">';
+                h += '<span>' + t[2] + '</span><span>' + t[1] + '</span></div>';
+            });
+            h += '</div>';
+            h += '<button class="btn btn-go" onclick="app.startTraining()"' + (throwType?'':' disabled') + '>Starta Träning</button>';
+        } else {
+            h += '<div class="card-row" style="margin-bottom:14px"><span style="font-weight:600">Tränar: ' + throwType + '</span><span class="badge badge-green">' + sessionThrows.length + ' kast</span></div>';
+            if (throwResult) {
+                var c = accColor(throwResult.accuracy);
+                h += '<div class="result"><div class="result-acc" style="color:' + c + '">' + throwResult.accuracy + '%</div>';
+                h += '<div class="result-details"><span>Avstånd: ' + throwResult.distance + 'm</span><span>Hastighet: ' + throwResult.speed + ' km/h</span></div>';
+                h += '<div class="result-bar"><div class="result-fill" style="width:' + throwResult.accuracy + '%;background:' + c + '"></div></div></div>';
+            }
+            h += '<button class="btn btn-go" onclick="app.doThrow()">🎯 Kasta!</button>';
+            if (sessionThrows.length > 0) {
+                var avg = Math.round(sessionThrows.reduce(function(s,t){return s+t.accuracy;},0)/sessionThrows.length);
+                var best = Math.max.apply(null, sessionThrows.map(function(t){return t.accuracy;}));
+                h += '<div class="summary"><span>Snitt: ' + avg + '%</span><span>Bästa: ' + best + '%</span></div>';
+            }
+            h += '<button class="btn btn-stop" onclick="app.endSession()">Avsluta Pass</button>';
         }
-    </script>
+        document.getElementById('tab-training').innerHTML = h;
+    }
+
+    function renderGame() {
+        var h = '';
+        if (!gameActive) {
+            h += '<div class="section-title">Nytt Spel</div>';
+            h += '<div class="card"><p style="font-size:13px;color:#666;margin-bottom:12px">Spela till ' + gameTarget + ' poäng. Registrera poäng efter varje omgång.</p>';
+            h += '<button class="btn btn-go" onclick="app.startGame()">Starta Spel</button></div>';
+            h += '<div class="section-title">Spelhistorik</div>';
+            if (games.length === 0) {
+                h += '<div class="empty">Inga spel ännu.</div>';
+            } else {
+                games.slice(0,10).forEach(function(g) {
+                    h += '<div class="card"><div class="card-row"><span>' + new Date(g.date).toLocaleDateString('sv-SE') + '</span>';
+                    h += '<span class="badge ' + (g.won?'badge-green':'badge-red') + '">' + (g.won?'Vinst':'Förlust') + '</span></div>';
+                    h += '<div class="card-row"><span>Du ' + g.ps + ' – ' + g.os + ' Motståndare</span></div></div>';
+                });
+            }
+        } else {
+            h += '<div class="scoreboard">';
+            h += '<div class="score-side"><div class="score-label">Du</div><div class="score-num">' + gameScore.p + '</div>';
+            h += '<button class="score-btn p" onclick="app.addPt(\'p\')">+1</button></div>';
+            h += '<div class="score-vs"><span>VS</span><span>Först till ' + gameTarget + '</span></div>';
+            h += '<div class="score-side"><div class="score-label">Motståndare</div><div class="score-num opp">' + gameScore.o + '</div>';
+            h += '<button class="score-btn o" onclick="app.addPt(\'o\')">+1</button></div>';
+            h += '</div>';
+            h += '<button class="btn btn-stop" onclick="app.cancelGame()">Avbryt Spel</button>';
+        }
+        document.getElementById('tab-game').innerHTML = h;
+    }
+
+    function renderChallenges() {
+        var chs = [
+            { icon:'🎯', title:'Precision Master', desc:'Gör 10 kast med över 80% noggrannhet', target:10, reward:50 },
+            { icon:'⚡', title:'Speed Demon', desc:'Slutför ett träningspass på under 15 min', target:1, reward:30 },
+            { icon:'🏆', title:'Champion', desc:'Vinn 3 matcher', target:3, reward:100 },
+        ];
+        var prog = load('chprog', [0,0,0]);
+        var h = '<div class="streak" style="flex-direction:column;padding:22px"><span style="font-size:44px">🔥</span><span class="streak-num">' + stats.streak + '</span><span class="streak-txt">Dagars Streak</span></div>';
+        h += '<div class="section-title">Dagens Utmaningar</div>';
+        chs.forEach(function(c, i) {
+            var p = Math.min(prog[i], c.target);
+            var pct = (p/c.target*100);
+            h += '<div class="challenge"><div class="challenge-head"><span class="challenge-title">' + c.icon + ' ' + c.title + '</span>';
+            h += '<span class="challenge-reward">+' + c.reward + 'p</span></div>';
+            h += '<div class="challenge-desc">' + c.desc + '</div>';
+            h += '<div class="progress"><div class="progress-fill" style="width:' + pct + '%"></div></div>';
+            h += '<div class="challenge-prog">' + (p>=c.target?'<span class="done">✓ Klar!</span>':p+'/'+c.target) + '</div></div>';
+        });
+        document.getElementById('tab-challenges').innerHTML = h;
+    }
+
+    function renderAchievements() {
+        var h = '<div class="card" style="background:linear-gradient(135deg,#2E7D32,#1B5E20);color:white;text-align:center;padding:22px">';
+        h += '<div style="font-size:44px;margin-bottom:6px">⭐</div>';
+        h += '<div style="font-size:26px;font-weight:bold">Level ' + stats.level + '</div>';
+        h += '<div style="font-size:14px;opacity:0.9;margin-bottom:10px">' + stats.points + ' poäng</div>';
+        h += '<div class="progress" style="background:rgba(255,255,255,0.3)"><div class="progress-fill" style="width:' + (stats.points/stats.ptnl*100) + '%;background:white"></div></div>';
+        h += '<div style="font-size:11px;margin-top:6px;opacity:0.85">' + (stats.ptnl-stats.points) + ' poäng till Level ' + (stats.level+1) + '</div></div>';
+        h += '<div class="section-title">Dina Achievements</div><div class="ach-grid">';
+        achievements.forEach(function(a) {
+            h += '<div class="ach' + (a.unlocked?'':' locked') + '"><div class="ach-icon">' + a.icon + '</div>';
+            h += '<div class="ach-name">' + a.name + '</div><div class="ach-pts">+' + a.pts + 'p</div></div>';
+        });
+        h += '</div>';
+        document.getElementById('tab-achievements').innerHTML = h;
+    }
+
+    /* ─── ACTIONS ─── */
+    window.app = {
+        selectThrow: function(type) {
+            throwType = type;
+            renderTraining();
+        },
+        startTraining: function() {
+            if (!throwType) return;
+            isTraining = true; sessionThrows = []; throwResult = null;
+            renderTraining();
+        },
+        doThrow: function() {
+            var accuracy = Math.floor(Math.random()*40)+60;
+            var distance = (Math.random()*2).toFixed(2);
+            var speed = (Math.random()*15+5).toFixed(1);
+            throwResult = { accuracy: accuracy, distance: distance, speed: speed };
+            sessionThrows.push(throwResult);
+
+            stats.totalThrows += 1;
+            var allAcc = sessionThrows.reduce(function(s,t){return s+t.accuracy;},0);
+            stats.accuracy = Math.round(allAcc / sessionThrows.length);
+            updateStreak();
+            checkAch();
+
+            // Challenge progress
+            if (accuracy >= 80) {
+                var prog = load('chprog', [0,0,0]);
+                prog[0] = Math.min(prog[0]+1, 10);
+                save('chprog', prog);
+                if (prog[0] === 10) notify('Utmaning klar: Precision Master (+50p)');
+            }
+
+            save('stats2', stats);
+            renderTraining();
+        },
+        endSession: function() {
+            if (sessionThrows.length > 0) {
+                var avg = Math.round(sessionThrows.reduce(function(s,t){return s+t.accuracy;},0)/sessionThrows.length);
+                sessions.unshift({ date: new Date().toISOString(), throws: sessionThrows.length, accuracy: avg, type: throwType });
+                save('sessions2', sessions);
+                stats.totalSessions += 1;
+                checkAch();
+                save('stats2', stats);
+                // Speed demon challenge
+                var prog = load('chprog', [0,0,0]);
+                prog[1] = Math.min(prog[1]+1, 1);
+                save('chprog', prog);
+                notify('Träningspass sparat! ' + sessionThrows.length + ' kast, ' + avg + '% snitt');
+            }
+            isTraining = false; throwResult = null; sessionThrows = []; throwType = null;
+            render();
+        },
+        startGame: function() {
+            gameActive = true; gameScore = { p:0, o:0 };
+            renderGame();
+        },
+        addPt: function(who) {
+            gameScore[who] += 1;
+            if (gameScore.p >= gameTarget || gameScore.o >= gameTarget) {
+                var won = gameScore.p >= gameTarget;
+                if (won) stats.wins += 1;
+                checkAch();
+                games.unshift({ date: new Date().toISOString(), ps: gameScore.p, os: gameScore.o, won: won });
+                save('games2', games); save('stats2', stats);
+                // Champion challenge
+                if (won) { var prog = load('chprog',[0,0,0]); prog[2] = Math.min(prog[2]+1,3); save('chprog',prog); }
+                notify(won ? 'Grattis! Du vann!' : 'Tyvärr, förlust. Nästa gång!');
+                gameActive = false; gameScore = { p:0, o:0 };
+            }
+            renderGame();
+        },
+        cancelGame: function() {
+            gameActive = false; gameScore = { p:0, o:0 };
+            renderGame();
+        }
+    };
+
+    // Initial render
+    render();
+
+    /* ─── PWA ─── */
+    var deferredPrompt;
+    window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault(); deferredPrompt = e;
+        var b = document.getElementById('install-banner');
+        if (b) b.style.display = 'block';
+    });
+    window.installApp = function() {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function() {
+            deferredPrompt = null;
+            var b = document.getElementById('install-banner');
+            if (b) b.style.display = 'none';
+        });
+    };
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+})();
+</script>
 </body>
 </html>
