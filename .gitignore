@@ -87,3 +87,5 @@ Desktop.ini
 
 # Docker
 docker-compose.override.yml
+.vercel
+.env*.local
