@@ -1,38 +1,322 @@
-.App {
+/* ─── Reset & Base ─── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+.app {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #f5f5f5;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ─── Notification ─── */
+.notification {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2E7D32;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  animation: slideDown 0.3s ease;
+  max-width: 90%;
   text-align: center;
 }
+.notification.info { background: #1565C0; }
+@keyframes slideDown { from { opacity: 0; transform: translateX(-50%) translateY(-20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* ─── Header ─── */
+.app-header {
+  background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+  color: white;
+  padding: 40px 20px 20px;
+  text-align: center;
 }
+.app-header h1 { font-size: 26px; margin-bottom: 4px; }
+.app-header p { font-size: 14px; opacity: 0.9; }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+/* ─── Navigation ─── */
+.app-nav {
+  display: flex;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.nav-btn {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  padding: 10px 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  gap: 2px;
+}
+.nav-btn.active { border-bottom-color: #2E7D32; color: #2E7D32; }
+.nav-btn:hover { background: #f5f5f5; }
+.nav-icon { font-size: 18px; }
+.nav-label { font-size: 11px; font-weight: 500; }
+
+/* ─── Content ─── */
+.app-content { padding: 16px; padding-bottom: 32px; }
+.tab-panel { animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ─── Stats Grid ─── */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+.stat-card { padding: 20px; border-radius: 16px; text-align: center; }
+.stat-card.green { background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%); color: white; }
+.stat-value { font-size: 32px; font-weight: bold; margin-bottom: 4px; }
+.stat-label { font-size: 12px; opacity: 0.9; }
+
+/* ─── Streak ─── */
+.streak-banner {
+  background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
   color: white;
+  padding: 16px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.streak-banner.big {
+  flex-direction: column;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.streak-fire { font-size: 28px; }
+.streak-count { font-size: 32px; font-weight: bold; }
+.streak-text { font-size: 14px; opacity: 0.9; }
+.streak-banner.big .streak-fire { font-size: 48px; }
+.streak-banner.big .streak-count { font-size: 42px; }
+
+/* ─── Level Card ─── */
+.level-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.level-card.big {
+  background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+  color: white;
+  text-align: center;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.level-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
+.level-icon { font-size: 48px; margin-bottom: 8px; }
+.level-num { font-size: 28px; font-weight: bold; margin-bottom: 4px; }
+.level-points { font-size: 16px; opacity: 0.9; margin-bottom: 12px; }
+.level-next { font-size: 12px; opacity: 0.8; margin-top: 8px; }
+
+/* ─── Progress Bar ─── */
+.progress-bar { height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+.progress-bar.light { background: rgba(255,255,255,0.3); }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #2E7D32 0%, #4CAF50 100%); border-radius: 4px; transition: width 0.4s ease; }
+.progress-fill.white { background: white; }
+
+/* ─── Section Title ─── */
+.section-title { font-size: 18px; font-weight: 600; margin: 20px 0 12px; color: #333; }
+
+/* ─── Cards ─── */
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.card-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; font-size: 14px; }
+.card-label { font-weight: 600; color: #333; }
+.card-badge { background: #E8F5E9; color: #2E7D32; padding: 2px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+.card-type { color: #888; font-size: 12px; text-transform: capitalize; }
+.card-desc { font-size: 14px; color: #666; line-height: 1.5; margin-bottom: 12px; }
+
+/* ─── Empty State ─── */
+.empty-state { text-align: center; padding: 32px 16px; color: #888; }
+.empty-state p { margin-bottom: 16px; }
+
+/* ─── Buttons ─── */
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(46,125,50,0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-top: 12px;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(46,125,50,0.4); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-secondary {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: white;
+  color: #D32F2F;
+  border: 2px solid #D32F2F;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { background: #FFEBEE; }
+
+/* ─── Throw Type Cards ─── */
+.throw-type-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 14px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: all 0.2s;
+  text-align: left;
+}
+.throw-type-card:hover { border-color: #4CAF50; background: #f9fff9; }
+.throw-type-card.selected { border-color: #2E7D32; background: #E8F5E9; }
+.throw-icon { font-size: 32px; }
+.throw-label { font-size: 16px; font-weight: 600; color: #333; }
+.throw-desc { font-size: 13px; color: #888; }
+
+/* ─── Training ─── */
+.training-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.training-header h3 { font-size: 18px; }
+.throw-count { background: #E8F5E9; color: #2E7D32; padding: 4px 12px; border-radius: 10px; font-size: 14px; font-weight: 600; }
+
+.result-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+.result-accuracy { font-size: 56px; font-weight: bold; margin-bottom: 8px; }
+.result-details { display: flex; justify-content: center; gap: 24px; font-size: 14px; color: #666; margin-bottom: 12px; }
+.result-bar { height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden; }
+.result-fill { height: 100%; border-radius: 5px; transition: width 0.3s; }
+
+.session-summary {
+  background: white;
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin-top: 12px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
-.App-link {
-  color: #61dafb;
+/* ─── Scoreboard ─── */
+.scoreboard {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 16px;
 }
+.score-side {
+  flex: 1;
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.score-label { font-size: 14px; font-weight: 600; color: #333; }
+.score-number { font-size: 48px; font-weight: bold; color: #2E7D32; }
+.score-divider { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 12px; }
+.score-vs { font-size: 20px; font-weight: bold; color: #888; }
+.score-target { font-size: 11px; color: #aaa; margin-top: 4px; }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.score-btn {
+  padding: 10px 20px;
+  background: #2E7D32;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 50px;
+}
+.score-btn:hover { background: #1B5E20; transform: scale(1.05); }
+.score-btn.small { padding: 6px 14px; font-size: 14px; }
+.score-btn.opponent { background: #D32F2F; }
+.score-btn.opponent:hover { background: #B71C1C; }
+
+.badge-win { background: #E8F5E9; color: #2E7D32; padding: 2px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+.badge-loss { background: #FFEBEE; color: #D32F2F; padding: 2px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+
+/* ─── Challenges ─── */
+.challenge-card {
+  background: white;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+  border-left: 4px solid #2E7D32;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.challenge-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.challenge-title { font-size: 16px; font-weight: 600; }
+.challenge-reward { background: #FFF3E0; color: #F57C00; padding: 3px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+.challenge-desc { font-size: 13px; color: #888; margin-bottom: 10px; }
+.challenge-progress { font-size: 12px; color: #888; text-align: right; margin-top: 6px; }
+.challenge-progress .complete { color: #2E7D32; font-weight: 600; }
+
+/* ─── Achievements ─── */
+.achievements-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.achievement-card {
+  background: white;
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s;
+}
+.achievement-card:hover { transform: translateY(-2px); }
+.achievement-card.locked { opacity: 0.4; filter: grayscale(80%); }
+.achievement-icon { font-size: 40px; margin-bottom: 6px; }
+.achievement-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.achievement-points { font-size: 12px; color: #2E7D32; font-weight: 600; }
+.achievement-req { font-size: 11px; color: #aaa; margin-top: 4px; }
+
+/* ─── Mobile ─── */
+@media (max-width: 480px) {
+  .app { max-width: 100%; }
+  .app-header h1 { font-size: 22px; }
+  .stat-value { font-size: 26px; }
+  .result-accuracy { font-size: 44px; }
+  .score-number { font-size: 40px; }
 }
