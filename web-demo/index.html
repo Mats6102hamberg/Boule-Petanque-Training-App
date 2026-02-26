@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boule Pétanque Training App - Demo</title>
+    <title>Boule Pétanque Training App</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2E7D32">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Boule Training">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <style>
         * {
             margin: 0;
@@ -306,6 +312,27 @@
             transform: scale(0.95);
         }
 
+        /* Mobile: remove phone frame, full screen app */
+        @media (max-width: 480px) {
+            body { background: #f5f5f5; padding: 0; }
+            .container { max-width: 100%; border-radius: 0; }
+            .phone-frame { background: none; padding: 0; border-radius: 0; }
+            .screen { border-radius: 0; height: auto; min-height: 100vh; }
+            .content { height: auto; min-height: calc(100vh - 160px); }
+        }
+
+        /* Install banner */
+        .install-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 20px;
+            text-align: center;
+            font-size: 14px;
+            cursor: pointer;
+            display: none;
+        }
+        .install-banner strong { font-weight: 700; }
+
         /* Streak */
         .streak-card {
             background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
@@ -333,6 +360,11 @@
     </style>
 </head>
 <body>
+    <!-- Install banner (visas om PWA-install är tillgänglig) -->
+    <div class="install-banner" id="install-banner" onclick="installApp()">
+        <strong>Installera appen</strong> – Lägg till på hemskärmen för snabb åtkomst
+    </div>
+
     <div class="container">
         <div class="phone-frame">
             <div class="screen">
@@ -602,19 +634,36 @@
 
     <script>
         function showTab(tabName) {
-            // Hide all tabs
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            // Remove active from nav
-            const navTabs = document.querySelectorAll('.nav-tab');
-            navTabs.forEach(nav => nav.classList.remove('active'));
-            
-            // Show selected tab
+            var tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(function(tab) { tab.classList.remove('active'); });
+            var navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(function(nav) { nav.classList.remove('active'); });
             document.getElementById(tabName).classList.add('active');
-            
-            // Add active to nav
             event.target.classList.add('active');
+        }
+
+        // PWA install
+        var deferredPrompt;
+        var installBanner = document.getElementById('install-banner');
+
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (installBanner) installBanner.style.display = 'block';
+        });
+
+        function installApp() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(function() {
+                deferredPrompt = null;
+                if (installBanner) installBanner.style.display = 'none';
+            });
+        }
+
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js');
         }
     </script>
 </body>
